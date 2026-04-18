@@ -1,0 +1,802 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { Head } from '@inertiajs/vue3'
+
+defineProps<{
+    canRegister: boolean
+}>()
+
+const fileName = ref('Görsel Seçin')
+const previewImage = ref('')
+const isUploading = ref(false)
+const isSubmittingRsvp = ref(false)
+const showSuccessModal = ref(false)
+const successTitle = ref('')
+const successMessage = ref('')
+const countdown = ref({
+    days: '00',
+    hours: '00',
+    minutes: '00',
+    seconds: '00'
+})
+
+const form = ref({
+    ad: '',
+    soyad: '',
+    katilim_durumu: '',
+    kisi_sayisi: '1'
+})
+
+onMounted(() => {
+    generateParticles()
+    setupEnvelopeListener()
+    startCountdown()
+})
+
+const generateParticles = () => {
+    const container = document.getElementById('particles')
+    if (container) {
+        for (let i = 0; i < 35; i++) {
+            const p = document.createElement('div')
+            p.className = 'particle'
+            p.style.left = Math.random() * 100 + '%'
+            p.style.width = p.style.height = (Math.random() * 5 + 3) + 'px'
+            p.style.animationDelay = Math.random() * 5 + 's'
+            container.appendChild(p)
+        }
+    }
+}
+
+const setupEnvelopeListener = () => {
+    const envelope = document.getElementById('main-envelope')
+    if (envelope) {
+        envelope.addEventListener('click', () => {
+            if (envelope.classList.contains('open')) return
+            envelope.classList.add('open')
+            setTimeout(() => {
+                const wrapper = document.getElementById('envelope-wrapper')
+                const main = document.getElementById('main-content')
+                if (wrapper && main) {
+                    wrapper.style.opacity = '0'
+                    wrapper.style.transform = 'scale(1.1)'
+                    setTimeout(() => {
+                        wrapper.style.display = 'none'
+                        main.classList.add('visible')
+                        document.body.classList.remove('no-scroll')
+                        setTimeout(() => {
+                            document.querySelectorAll('.card').forEach((c, i) => {
+                                setTimeout(() => c.classList.add('show'), 200 * i)
+                            })
+                        }, 200)
+                    }, 1000)
+                }
+            }, 3500)
+        })
+    }
+}
+
+const handleFileInput = (event: Event) => {
+    const target = event.target as HTMLInputElement
+    if (target.files && target.files[0]) {
+        fileName.value = target.files[0].name
+        const reader = new FileReader()
+        reader.onload = (e) => {
+            previewImage.value = e.target?.result as string
+        }
+        reader.readAsDataURL(target.files[0])
+    }
+}
+
+const uploadPhoto = async () => {
+    const fileInput = document.getElementById('weddingFile') as HTMLInputElement
+    if (!fileInput.files?.[0]) {
+        alert('Lütfen önce bir görsel seçin.')
+        return
+    }
+
+    isUploading.value = true
+    const formData = new FormData()
+    formData.append('weddingFile', fileInput.files[0])
+
+    try {
+        const response = await fetch('/upload-photo', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+
+        if (response.ok) {
+            showSuccessModal.value = true
+            successTitle.value = 'Fotoğrafınız Albüme Eklendi!'
+            successMessage.value = 'Anı defterimize hoş geldiniz. Teşekkürler!'
+            fileInput.value = ''
+            fileName.value = 'Görsel Seçin'
+            previewImage.value = ''
+        } else {
+            alert('❌ ' + await response.text())
+        }
+    } catch (error) {
+        console.error('Upload error:', error)
+        alert('Bir hata oluştu. Lütfen tekrar deneyin.')
+    } finally {
+        isUploading.value = false
+    }
+}
+
+const submitRsvp = async (e: Event) => {
+    e.preventDefault()
+    isSubmittingRsvp.value = true
+
+    const formData = new FormData()
+    formData.append('ad', form.value.ad)
+    formData.append('soyad', form.value.soyad)
+    formData.append('katilim_durumu', form.value.katilim_durumu)
+    formData.append('kisi_sayisi', form.value.kisi_sayisi)
+
+    try {
+        const response = await fetch('/rsvp-kaydet', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+
+        if (response.ok) {
+            showSuccessModal.value = true
+            successTitle.value = 'Katılımınız Kaydedildi!'
+            successMessage.value = 'Değerli katılım bildiriminiz için teşekkür ederiz. Sizleri aramızda görmekten mutluluk duyacağız!'
+            form.value = { ad: '', soyad: '', katilim_durumu: '', kisi_sayisi: '1' }
+        } else {
+            alert('❌ ' + await response.text())
+        }
+    } catch (error) {
+        console.error('RSVP error:', error)
+        alert('Bir hata oluştu. Lütfen tekrar deneyin.')
+    } finally {
+        isSubmittingRsvp.value = false
+    }
+}
+
+const startCountdown = () => {
+    const updateCountdown = () => {
+        const target = new Date('May 02, 2026 14:00:00').getTime()
+        const now = new Date().getTime()
+        const d = target - now
+        if (d < 0) return
+        countdown.value.days = String(Math.floor(d / (1000 * 60 * 60 * 24))).padStart(2, '0')
+        countdown.value.hours = String(Math.floor((d % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0')
+        countdown.value.minutes = String(Math.floor((d % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0')
+        countdown.value.seconds = String(Math.floor((d % (1000 * 60)) / 1000)).padStart(2, '0')
+    }
+    updateCountdown()
+    setInterval(updateCountdown, 1000)
+}
+
+const closeModal = () => {
+    showSuccessModal.value = false
+}
+
+const triggerFileInput = () => {
+    document.getElementById('weddingFile')?.click()
+}
+</script>
+
+<template>
+    <Head title="Hüma & Tuğcan | Nişan Davetiyesi">
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Lato:wght@300;400;700&family=Dancing+Script:wght@600;700&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </Head>
+
+    <div class="body-wrapper no-scroll">
+        <div class="particles" id="particles"></div>
+
+        <div id="envelope-wrapper">
+            <div class="envelope" id="main-envelope">
+                <div class="flap"></div>
+                <div class="wax-seal"><i class="fas fa-heart"></i></div>
+                <div class="letter-card">
+                    <p class="cursive content-item" style="font-size: 1.3rem; color: var(--gold-dark);">Mutluluğumuza Davetlisiniz</p>
+                    <h1 class="content-item names-style" style="font-size: 2.4rem; margin: 10px 0;">Hüma & Tuğcan</h1>
+                    <p class="content-item" style="font-weight: 600; color: var(--gold-dark); letter-spacing: 2px;">02.05.2026</p>
+                </div>
+            </div>
+            <p class="cursive" style="color:var(--gold); margin-top: 30px; font-size: 1.2rem; animation: hintBounce 2s infinite;">✧ Açmak için dokunun ✧</p>
+        </div>
+
+        <div id="main-content">
+            <header style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+                <div class="card show">
+                    <p class="cursive" style="font-size: 1.8rem; color: var(--gold-dark);">Nişan Törenimize Davetlisiniz</p>
+                    <h1 class="names-style" style="font-size: 3.5rem; margin: 15px 0;">Hüma & Tuğcan</h1>
+                    <p style="font-weight: 700; color: var(--primary-green);">02 MAYIS 2026 | CUMARTESİ</p>
+                    <div class="countdown">
+                        <div class="countdown-box"><span id="days">{{ countdown.days }}</span><small>Gün</small></div>
+                        <div class="countdown-box"><span id="hours">{{ countdown.hours }}</span><small>Saat</small></div>
+                        <div class="countdown-box"><span id="minutes">{{ countdown.minutes }}</span><small>Dakika</small></div>
+                        <div class="countdown-box"><span id="seconds">{{ countdown.seconds }}</span><small>Saniye</small></div>
+                    </div>
+                </div>
+            </header>
+
+            <section id="mekan">
+                <div class="card">
+                    <i class="fas fa-map-marker-alt" style="font-size: 2.5rem; color: var(--primary-green); margin-bottom: 10px;"></i>
+                    <h2 style="font-family: 'Playfair Display'; margin-bottom: 10px;">Polen Restoran</h2>
+                    <div class="location-box">
+                        <h3 class="location-title"><i class="fas fa-map-pin"></i>Tören Lokasyonu</h3>
+                        <div class="location-item">
+                            <i class="fas fa-location-dot"></i>
+                            <div class="location-item-text">
+                                <span class="location-item-label">Adres</span>
+                                <span class="location-item-value">Eğridere, Sarmaşık Sk. No: 20/A, Bornova/İzmir</span>
+                            </div>
+                        </div>
+                        <div class="location-item">
+                            <i class="fas fa-clock"></i>
+                            <div class="location-item-text">
+                                <span class="location-item-label">Tören Saati</span>
+                                <span class="location-item-value">14:00</span>
+                            </div>
+                        </div>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=Polen+Restoran+Bornova+İzmir&travelmode=driving" target="_blank" class="location-button">
+                            <i class="fas fa-route"></i>Yol Tarifi Al
+                        </a>
+                        <p class="location-note"><i class="fas fa-info-circle"></i> Butona tıklandığında haritada yol tarifi açılacaktır</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="galeri">
+                <div class="card">
+                    <i class="fas fa-camera-retro" style="font-size: 2.5rem; color: var(--bright-green);"></i>
+                    <h2 style="margin: 15px 0;">Dijital Anı Defteri</h2>
+                    <div class="upload-area" @click="triggerFileInput">
+                        <i class="fas fa-cloud-upload-alt" style="color: var(--gold); font-size: 2.5rem;"></i>
+                        <p style="font-weight: bold; margin-top: 10px;">{{ fileName }}</p>
+                        <img v-if="previewImage" :src="previewImage" style="width: 100%; border-radius: 10px; margin-top: 15px;">
+                    </div>
+                    <input type="file" id="weddingFile" accept="image/*" style="display:none" @change="handleFileInput">
+                    <button class="submit-btn" @click="uploadPhoto" :disabled="isUploading">
+                        <i v-if="isUploading" class="fas fa-spinner fa-spin"></i>
+                        {{ isUploading ? 'Yükleniyor...' : 'FOTOĞRAFI GÖNDER' }}
+                    </button>
+                </div>
+            </section>
+
+            <section id="rsvp">
+                <div class="card">
+                    <i class="fas fa-envelope-open-text" style="font-size: 2.5rem; color: var(--gold-dark);"></i>
+                    <h2 style="margin-bottom: 20px;">Katılım Bildirimi</h2>
+                    <form @submit.prevent="submitRsvp">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <input v-model="form.ad" type="text" placeholder="Adınız" required>
+                            <input v-model="form.soyad" type="text" placeholder="Soyadınız" required>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                            <select v-model="form.katilim_durumu" required>
+                                <option value="">Durum</option>
+                                <option value="Katılıyorum">🎉 Katılıyorum</option>
+                                <option value="Katılamıyorum">😔 Katılamıyorum</option>
+                            </select>
+                            <select v-model="form.kisi_sayisi">
+                                <option value="1">1 Kişi</option>
+                                <option value="2">2 Kişi</option>
+                                <option value="3+">3+ Kişi</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="submit-btn" :disabled="isSubmittingRsvp">
+                            <i v-if="isSubmittingRsvp" class="fas fa-spinner fa-spin"></i>
+                            {{ isSubmittingRsvp ? 'Kaydediliyor...' : 'KAYDI TAMAMLA' }}
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <footer style="text-align: center; padding: 4rem 1rem;">
+                <h2 class="names-style" style="font-size: 2.5rem;">Hüma & Tuğcan</h2>
+                <div style="margin-top: 25px;">
+                    <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 15px;">Design & Development by Eren G.</p>
+                    <div style="display: flex; justify-content: center; gap: 10px;">
+                        <a href="https://www.linkedin.com/in/ya%C5%9Far-eren-g%C3%BCre-436696255/" target="_blank" class="social-link"><i class="fab fa-linkedin"></i> LinkedIn</a>
+                        <a href="https://www.instagram.com/yasar.eren0/" target="_blank" class="social-link"><i class="fab fa-instagram"></i> Instagram</a>
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+        <div v-if="showSuccessModal" class="success-modal" @click.self="closeModal">
+            <div class="success-content">
+                <div class="success-icon"><i class="fas fa-check"></i></div>
+                <h3>{{ successTitle }}</h3>
+                <p>{{ successMessage }}</p>
+                <button class="success-close" @click="closeModal">Tamam</button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+:root {
+    --bg-gradient: linear-gradient(135deg, #0b1a0b 0%, #1a2e1a 50%, #0f2618 100%);
+    --primary-green: #2d6a4f;
+    --bright-green: #40916c;
+    --gold: #c9a84c;
+    --gold-light: #e8d5a0;
+    --gold-dark: #9a7b35;
+    --cream: #f5f9f5;
+    --envelope-cream: #faf6f1;
+    --envelope-beige: #f0e8dc;
+    --envelope-tan: #e6d5c3;
+    --wax-seal-gold: #d4af37;
+}
+
+* { box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow-x: hidden; }
+
+.body-wrapper {
+    font-family: 'Lato', sans-serif;
+    background: var(--bg-gradient);
+    color: #333;
+    line-height: 1.8;
+    width: 100%;
+    height: 100%;
+}
+
+.body-wrapper.no-scroll { overflow: hidden; position: fixed; }
+
+.particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: particleFloat 6s infinite ease-in-out;
+    opacity: 0.7;
+    box-shadow: 0 0 10px var(--gold);
+}
+
+@keyframes particleFloat {
+    0% { transform: translateY(105vh); opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { transform: translateY(-10vh); opacity: 0; }
+}
+
+@keyframes hintBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes shine { to { background-position: 200% center; } }
+
+.names-style {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-style: italic;
+    background: linear-gradient(to right, #9a7b35 20%, #e8d5a0 40%, #c9a84c 60%, #9a7b35 80%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shine 3s linear infinite;
+}
+
+.cursive { font-family: 'Dancing Script', cursive; }
+
+#envelope-wrapper {
+    position: fixed;
+    inset: 0;
+    background: var(--bg-gradient);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    perspective: 3000px;
+    transition: all 1s ease-in-out;
+}
+
+.envelope {
+    position: relative;
+    width: 90%;
+    max-width: 420px;
+    aspect-ratio: 4/3;
+    background: var(--envelope-cream);
+    border-radius: 8px;
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.2), 0 20px 60px rgba(0,0,0,0.4);
+    cursor: pointer;
+    transform-style: preserve-3d;
+}
+
+.envelope::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--envelope-beige);
+    border: 1px solid var(--gold-light);
+    z-index: 1;
+}
+
+.envelope::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--envelope-cream);
+    clip-path: polygon(0 35%, 50% 65%, 100% 35%, 100% 100%, 0 100%);
+    z-index: 7;
+    border-top: 1px solid rgba(201,168,76,0.3);
+}
+
+.flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    background: linear-gradient(180deg, var(--envelope-beige) 0%, var(--envelope-cream) 100%);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    z-index: 8;
+    transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.wax-seal {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle at 30% 30%, #f5e6c8, var(--wax-seal-gold), #b8941f);
+    border-radius: 50%;
+    z-index: 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 2px 10px rgba(255,255,255,0.4);
+    transition: 0.6s ease;
+    border: 3px solid rgba(255,255,255,0.4);
+}
+
+.wax-seal i {
+    color: #8b6914;
+    font-size: 1.8rem;
+    text-shadow: 0 1px 3px rgba(255,255,255,0.5);
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));
+}
+
+.letter-card {
+    position: absolute;
+    bottom: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90%;
+    background: #fffefb;
+    z-index: 3;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: 1px solid var(--envelope-tan);
+    transition: transform 1.5s cubic-bezier(0.34, 1, 0.64, 1);
+}
+
+.letter-card::before {
+    content: '';
+    position: absolute;
+    inset: 12px;
+    border: 1px solid var(--gold-light);
+}
+
+.content-item {
+    opacity: 0;
+    transform: translateY(15px);
+    transition: 0.8s;
+}
+
+.envelope.open .flap {
+    transform: rotateX(180deg);
+    z-index: 2;
+}
+
+.envelope.open .wax-seal {
+    opacity: 0;
+    transform: translate(-50%, -100%) scale(0);
+}
+
+@media (min-width: 481px) {
+    .envelope.open .letter-card {
+        transform: translateY(-75%) scale(1.05);
+        z-index: 10;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+    }
+}
+
+@media (max-width: 480px) {
+    .envelope.open .letter-card {
+        transform: translateY(-40%) scale(1);
+        z-index: 10;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+}
+
+.envelope.open .content-item { opacity: 1; transform: translateY(0); }
+.envelope.open .content-item:nth-child(1) { transition-delay: 1.5s; }
+.envelope.open .content-item:nth-child(2) { transition-delay: 1.7s; }
+.envelope.open .content-item:nth-child(3) { transition-delay: 1.9s; }
+
+#main-content { display: none; opacity: 0; transition: 1s; }
+#main-content.visible { display: block; opacity: 1; }
+
+section { padding: 3rem 1.5rem; max-width: 850px; margin: 0 auto; text-align: center; }
+
+.card {
+    background: var(--cream);
+    padding: 3rem 1.5rem;
+    border-radius: 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    border-top: 5px solid var(--gold);
+    margin-bottom: 2.5rem;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: 0.8s;
+}
+
+.card.show { opacity: 1; transform: translateY(0); }
+
+.countdown { display: flex; gap: 8px; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
+.countdown-box { background: white; padding: 12px; border-radius: 12px; border: 2px solid var(--gold); min-width: 75px; }
+.countdown-box span { font-size: 1.8rem; font-weight: 700; color: var(--primary-green); display: block; }
+
+input, select {
+    width: 100%;
+    padding: 0.9rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, var(--primary-green), var(--bright-green));
+    color: white;
+    border: 1px solid var(--gold);
+    padding: 1.1rem;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    transition: 0.3s;
+}
+
+.submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.submit-btn:active:not(:disabled) { transform: scale(0.98); }
+.submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.upload-area {
+    border: 2px dashed var(--gold);
+    padding: 2rem;
+    border-radius: 18px;
+    cursor: pointer;
+    background: rgba(201,168,76,0.05);
+}
+
+.location-box {
+    background: linear-gradient(135deg, var(--primary-green) 0%, var(--bright-green) 100%);
+    border: 3px solid var(--gold);
+    border-radius: 20px;
+    padding: 30px 25px;
+    margin-bottom: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.location-box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(201,168,76,0.1) 0%, transparent 70%);
+    animation: shimmer 5s infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-30px, -30px); }
+}
+
+.location-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: white;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.location-title i { color: var(--gold-light); font-size: 2rem; }
+
+.location-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin: 18px 0;
+    color: white;
+    position: relative;
+    z-index: 1;
+    text-align: left;
+    padding: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.location-item:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateX(5px);
+}
+
+.location-item i {
+    color: var(--gold-light);
+    font-size: 1.3rem;
+    margin-top: 3px;
+    min-width: 25px;
+}
+
+.location-item-text { flex: 1; line-height: 1.6; }
+.location-item-label { font-weight: 700; display: block; margin-bottom: 3px; color: var(--gold-light); }
+.location-item-value { font-size: 0.95rem; }
+
+.location-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    color: var(--primary-green);
+    padding: 15px 35px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    margin-top: 25px;
+    transition: all 0.3s ease;
+    border: 2px solid var(--gold);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    position: relative;
+    z-index: 1;
+    animation: buttonPulse 2s infinite;
+}
+
+.location-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.location-button:active { transform: translateY(-1px) scale(0.98); }
+
+@keyframes buttonPulse {
+    0%, 100% { box-shadow: 0 5px 15px rgba(0,0,0,0.2), 0 0 0 0 rgba(201,168,76,0.4); }
+    50% { box-shadow: 0 5px 15px rgba(0,0,0,0.2), 0 0 0 12px rgba(201,168,76,0); }
+}
+
+.location-note {
+    text-align: center;
+    margin-top: 10px;
+    padding: 10px;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.7);
+    position: relative;
+    z-index: 1;
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--gold);
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 1px solid var(--gold);
+    border-radius: 25px;
+    margin: 5px;
+    background: rgba(201, 168, 76, 0.1);
+    font-size: 0.9rem;
+}
+
+.social-link:hover { background: rgba(201, 168, 76, 0.2); }
+
+.success-modal {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 3000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.success-content {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 90%;
+    width: 400px;
+    border: 3px solid var(--gold);
+    animation: slideIn 0.4s ease;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary-green), var(--bright-green));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    border: 3px solid var(--gold);
+}
+
+.success-icon i { color: white; font-size: 2.5rem; }
+
+.success-content h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--primary-green);
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+}
+
+.success-content p { color: #666; margin-bottom: 25px; line-height: 1.6; }
+
+.success-close {
+    background: linear-gradient(135deg, var(--primary-green), var(--bright-green));
+    color: white;
+    border: 2px solid var(--gold);
+    padding: 12px 35px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+.success-close:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+@media (max-width: 480px) {
+    .location-box { padding: 25px 20px; }
+    .location-title { font-size: 1.5rem; }
+    .wax-seal { width: 60px; height: 60px; }
+    .wax-seal i { font-size: 1.5rem; }
+}
+</style>
