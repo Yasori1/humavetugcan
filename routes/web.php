@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\RSVP;
+use App\Models\Asset;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +29,13 @@ Route::post('/upload-photo', function (Request $request) {
         $fileName = time() . '_' . $file->getClientOriginalName();
         $path = $file->storeAs('galeri', $fileName, 'public');
 
+        Asset::create([
+            'type' => $file->getClientMimeType(),
+            'path' => $path,
+            'name' => $fileName,
+            'description' => 'Hüma & Tuğcan Albümü',
+        ]);
+
         return "✅ Harika! Dosyanız Hüma & Tuğcan albümüne eklendi.";
     }
     
@@ -46,7 +55,14 @@ Route::post('/rsvp-kaydet', function (Request $request) {
     $logEntry = "[{$tarih}] - {$ad} {$soyad} - Durum: {$durum} - Kişi Sayısı: {$kisi_sayisi}" . PHP_EOL;
 
     // storage/app/katilimcilar.txt dosyasına güvenli bir şekilde ekler
-    Storage::disk('local')->append('katilimcilar.txt', $logEntry);
+    // Storage::disk('local')->append('katilimcilar.txt', $logEntry);
+
+    RSVP::create([
+        'name' => $ad,
+        'surname' => $soyad,
+        'status' => $durum === 'var' ? true : false,
+        'guest_count' => $kisi_sayisi,
+    ]);
 
     return "✅ Bildiriminiz başarıyla kaydedildi. Teşekkürler!";
 })->name('rsvp.save');
