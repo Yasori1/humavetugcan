@@ -52,7 +52,7 @@ Route::post('/rsvp-kaydet', function (Request $request) {
     $tarih = date('d.m.Y H:i:s');
 
     // Kayıt Formatı: [Tarih] İsim Soyisim - Durum - Kişi Sayısı
-    $logEntry = "[{$tarih}] - {$ad} {$soyad} - Durum: {$durum} - Kişi Sayısı: {$kisi_sayisi}" . PHP_EOL;
+    // $logEntry = "[{$tarih}] - {$ad} {$soyad} - Durum: {$durum} - Kişi Sayısı: {$kisi_sayisi}" . PHP_EOL;
 
     // storage/app/katilimcilar.txt dosyasına güvenli bir şekilde ekler
     // Storage::disk('local')->append('katilimcilar.txt', $logEntry);

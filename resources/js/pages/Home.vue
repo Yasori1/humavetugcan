@@ -14,15 +14,15 @@
         @click="openEnvelope"
       >
         <div class="absolute inset-0 bg-[#f0e8dc] border border-[#e8d5a0] z-[1] rounded-lg"></div>
-        <div class="absolute top-0 left-0 w-full h-3/5 bg-gradient-to-b from-[#f0e8dc] to-[#faf6f1]" style="clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: top center; z-index: 8; transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1); background-image: url('image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27 viewBox=%270 0 100 100%27%3E%3Cfilter id=%27noise%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.8%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%27 height=%27100%27 filter=%27url(%23noise)%27 opacity=%270.08%27/%3E%3C/svg%3E');"></div>
-        <div class="absolute top-[55%] left-1/2 w-[70px] h-[70px] bg-gradient-to-br from-[#f5e6c8] via-[#d4af37] to-[#b8941f] rounded-full z-[9] flex items-center justify-center" style="transform: translate(-50%, -50%); box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 2px 10px rgba(255,255,255,0.4); border: 3px solid rgba(255,255,255,0.4); transition: 0.6s ease;">
+        <div class="absolute top-0 left-0 w-full h-3/5 bg-linear-to-b from-[#f0e8dc] to-[#faf6f1]" style="clip-path: polygon(0 0, 100% 0, 50% 100%); transform-origin: top center; z-index: 8; transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1); background-image: url('image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27 viewBox=%270 0 100 100%27%3E%3Cfilter id=%27noise%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.8%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%27 height=%27100%27 filter=%27url(%23noise)%27 opacity=%270.08%27/%3E%3C/svg%3E');"></div>
+        <div class="absolute top-[55%] left-1/2 w-[70px] h-[70px] bg-linear-to-br from-[#f5e6c8] via-[#d4af37] to-[#b8941f] rounded-full z-[9] flex items-center justify-center" style="transform: translate(-50%, -50%); box-shadow: 0 8px 25px rgba(0,0,0,0.4), inset 0 2px 10px rgba(255,255,255,0.4); border: 3px solid rgba(255,255,255,0.4); transition: 0.6s ease;">
           <i class="fas fa-heart text-[#8b6914] text-[1.8rem]" style="text-shadow: 0 1px 3px rgba(255,255,255,0.5); filter: drop-shadow(0 1px 2px rgba(0,0,0,0.2));"></i>
         </div>
         <div class="absolute bottom-[5%] left-[5%] w-[90%] h-[90%] bg-[#fffefb] rounded-lg z-[3] p-8 flex flex-col items-center justify-center text-center border border-[#e6d5c3]" style="background-image: url('image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27 viewBox=%270 0 100 100%27%3E%3Cfilter id=%27noise%27%3E%3CfeTurbulence type=%27fractalNoise%27 baseFrequency=%270.8%27 numOctaves=%274%27 stitchTiles=%27stitch%27/%3E%3C/filter%3E%3Crect width=%27100%27 height=%27100%27 filter=%27url(%23noise)%27 opacity=%270.08%27/%3E%3C/svg%3E'); transition: transform 1.5s cubic-bezier(0.34, 1, 0.64, 1);">
           <p class="font-dancing text-[1.3rem] text-[#9a7b35]" style="opacity: 0; transform: translateY(15px); transition: 0.8s;">
             Mutluluğumuza Davetlisiniz
           </p>
-          <h1 class="font-playfair font-bold italic text-[2.4rem] my-[10px] bg-gradient-to-r from-[#9a7b35] via-[#e8d5a0] to-[#c9a84c] bg-clip-text text-transparent animate-shine" style="background-size: 200% auto; opacity: 0; transform: translateY(15px); transition: 0.8s; animation: shine 3s linear infinite;">
+          <h1 class="font-playfair font-bold italic text-[2.4rem] my-[10px] bg-linear-to-r from-[#9a7b35] via-[#e8d5a0] to-[#c9a84c] bg-clip-text text-transparent animate-shine" style="background-size: 200% auto; opacity: 0; transform: translateY(15px); transition: 0.8s; animation: shine 3s linear infinite;">
             Hüma & Tuğcan
           </h1>
           <p class="font-bold text-[#9a7b35] tracking-[2px]" style="opacity: 0; transform: translateY(15px); transition: 0.8s;">
@@ -44,7 +44,7 @@
           <p class="font-dancing text-[1.8rem] text-[#9a7b35]">
             Nişan Törenimize Davetlisiniz
           </p>
-          <h1 class="font-playfair font-bold italic text-5xl my-[15px] bg-gradient-to-r from-[#9a7b35] via-[#e8d5a0] to-[#c9a84c] bg-clip-text text-transparent" style="background-size: 200% auto; animation: shine 3s linear infinite;">
+          <h1 class="font-playfair font-bold italic text-5xl my-[15px] bg-linear-to-r from-[#9a7b35] via-[#e8d5a0] to-[#c9a84c] bg-clip-text text-transparent" style="background-size: 200% auto; animation: shine 3s linear infinite;">
             Hüma & Tuğcan
           </h1>
           <p class="font-bold text-[#2d6a4f]">
@@ -77,8 +77,8 @@
           <i class="fas fa-map-marker-alt text-[2.5rem] text-[#2d6a4f] mb-2"></i>
           <h2 class="font-playfair mb-2">Polen Restoran</h2>
           
-          <div class="bg-gradient-to-br from-[#2d6a4f] to-[#40916c] border-[3px] border-[#c9a84c] rounded-[20px] p-[30px] mb-[10px] shadow-[0_10px_30px_rgba(0,0,0,0.3)] relative overflow-hidden">
-            <div class="absolute -top-1/2 -right-1/2 w-[200%] h-[200%] bg-gradient-radial from-[rgba(201,168,76,0.1)] to-transparent" style="animation: shimmer 5s infinite;"></div>
+          <div class="bg-linear-to-br from-[#2d6a4f] to-[#40916c] border-[3px] border-[#c9a84c] rounded-[20px] p-[30px] mb-[10px] shadow-[0_10px_30px_rgba(0,0,0,0.3)] relative overflow-hidden">
+            <div class="absolute -top-1/2 -right-1/2 w-[200%] h-[200%] bg-linear-radial from-[rgba(201,168,76,0.1)] to-transparent" style="animation: shimmer 5s infinite;"></div>
             
             <h3 class="font-playfair text-[1.8rem] text-white mb-[25px] flex items-center justify-center gap-3 relative z-10" style="text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
               <i class="fas fa-map-pin text-[#e8d5a0] text-[2rem]"></i>
@@ -97,7 +97,7 @@
               <i class="fas fa-clock text-[#e8d5a0] text-[1.3rem] mt-1 min-w-[25px]"></i>
               <div class="text-left flex-1">
                 <span class="font-bold block mb-1 text-[#e8d5a0]">Tören Saati</span>
-                <span class="text-[0.95rem]">14:00</span>
+                <span class="text-[0.95rem]">15:00</span>
               </div>
             </div>
             
@@ -135,7 +135,7 @@
             class="hidden"
             @change="handleFile"
           >
-          <button class="w-full bg-gradient-to-br from-[#2d6a4f] to-[#40916c] text-white border border-[#c9a84c] py-[1.1rem] rounded-full font-bold cursor-pointer transition-all mt-4 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98]" @click="uploadPhoto" :disabled="uploadLoading">
+          <button class="w-full bg-linear-to-br from-[#2d6a4f] to-[#40916c] text-white border border-[#c9a84c] py-[1.1rem] rounded-full font-bold cursor-pointer transition-all mt-4 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98]" @click="uploadPhoto" :disabled="uploadLoading">
             <span v-if="uploadLoading"><i class="fas fa-spinner fa-spin"></i> Yükleniyor...</span>
             <span v-else>FOTOĞRAFI GÖNDER</span>
           </button>
@@ -176,7 +176,7 @@
                 <option value="3+">3+ Kişi</option>
               </select>
             </div>
-            <button type="submit" class="w-full bg-gradient-to-br from-[#2d6a4f] to-[#40916c] text-white border border-[#c9a84c] py-[1.1rem] rounded-full font-bold cursor-pointer transition-all disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98]" :disabled="rsvpLoading">
+            <button type="submit" class="w-full bg-linear-to-br from-[#2d6a4f] to-[#40916c] text-white border border-[#c9a84c] py-[1.1rem] rounded-full font-bold cursor-pointer transition-all disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98]" :disabled="rsvpLoading">
               <span v-if="rsvpLoading"><i class="fas fa-spinner fa-spin"></i> Kaydediliyor...</span>
               <span v-else>KAYDI TAMAMLA</span>
             </button>
@@ -186,7 +186,7 @@
 
       <!-- Footer -->
       <footer class="text-center py-16 px-4">
-        <h2 class="font-playfair font-bold italic text-4xl bg-gradient-to-r from-[#9a7b35] via-[#e8d5a0] to-[#c9a84c] bg-clip-text text-transparent" style="background-size: 200% auto; animation: shine 3s linear infinite;">Hüma & Tuğcan</h2>
+        <h2 class="font-playfair font-bold italic text-4xl bg-linear-to-r from-[#9a7b35] via-[#e8d5a0] to-[#c9a84c] bg-clip-text text-transparent" style="background-size: 200% auto; animation: shine 3s linear infinite;">Hüma & Tuğcan</h2>
         <div class="mt-6">
           <p class="text-xs opacity-70 mb-4 text-slate-300">Design & Development by Eren G.</p>
           <div class="flex justify-center gap-2.5">
@@ -204,12 +204,12 @@
     <!-- Success Modal -->
     <div v-if="showModal" class="fixed inset-0 bg-[rgba(0,0,0,0.8)] z-[3000] flex justify-center items-center animate-fadeIn" @click.self="closeModal">
       <div class="bg-white rounded-[20px] text-center p-10 max-w-[90%] w-[400px] border-[3px] border-[#c9a84c] animate-slideIn">
-        <div class="w-20 h-20 bg-gradient-to-br from-[#2d6a4f] to-[#40916c] rounded-full flex items-center justify-center mx-auto mb-5 border-[3px] border-[#c9a84c]">
+        <div class="w-20 h-20 bg-linear-to-br from-[#2d6a4f] to-[#40916c] rounded-full flex items-center justify-center mx-auto mb-5 border-[3px] border-[#c9a84c]">
           <i class="fas fa-check text-white text-[2.5rem]"></i>
         </div>
         <h3 class="font-playfair text-[#2d6a4f] text-[1.8rem] mb-4">{{ modalTitle }}</h3>
         <p class="text-gray-600 mb-6 leading-relaxed">{{ modalMessage }}</p>
-        <button class="bg-gradient-to-br from-[#2d6a4f] to-[#40916c] text-white border-2 border-[#c9a84c] px-9 py-3 rounded-full font-bold transition-all hover:translate-y-[-2px] hover:shadow-[0_5px_15px_rgba(0,0,0,0.3)]" @click="closeModal">Tamam</button>
+        <button class="bg-linear-to-br from-[#2d6a4f] to-[#40916c] text-white border-2 border-[#c9a84c] px-9 py-3 rounded-full font-bold transition-all hover:translate-y-[-2px] hover:shadow-[0_5px_15px_rgba(0,0,0,0.3)]" @click="closeModal">Tamam</button>
       </div>
     </div>
   </div>
